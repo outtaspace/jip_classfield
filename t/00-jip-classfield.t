@@ -33,14 +33,15 @@ JIP::ClassField::attr(__PACKAGE__, attr_4 => (get => q{+}, set => q{+}));
 JIP::ClassField::attr(__PACKAGE__, attr_5 => (get => q{getter}, set => q{setter}));
 
 subtest 'attr()' => sub {
-    plan tests => 5;
+    plan tests => 1;
 
-    can_ok(__PACKAGE__, qw(_attr_1 _set_attr_1));
-    can_ok(__PACKAGE__, qw(attr_2  _set_attr_2));
-    can_ok(__PACKAGE__, qw(_attr_3 set_attr_3));
-    can_ok(__PACKAGE__, qw(attr_4  set_attr_4));
-
-    can_ok(__PACKAGE__, qw(getter setter));
+    can_ok __PACKAGE__, qw(
+        _attr_1  _set_attr_1
+        attr_2   _set_attr_2
+        _attr_3  set_attr_3
+        attr_4   set_attr_4
+        getter   setter
+    );
 };
 
 subtest 'getter and setter' => sub {
