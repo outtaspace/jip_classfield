@@ -109,6 +109,10 @@ Version 0.01
     has 'wtf' => (get => 'wtf_getter', set => 'wtf_setter');
     say $self->wtf_setter(42)->wtf_getter; # 42
 
+=head1 SEE ALSO
+
+Class::Accessor and Mojo::Base.
+
 =head1 AUTHOR
 
 Vladimir Zhavoronkov, C<< <flyweight at yandex.ru> >>
