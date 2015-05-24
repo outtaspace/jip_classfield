@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use English qw(-no_match_vars);
 
-plan tests => 4;
+plan tests => 5;
 
 subtest 'Require some module' => sub {
     plan tests => 4;
@@ -32,6 +32,12 @@ JIP::ClassField::attr(__PACKAGE__, attr_4 => (get => q{+}, set => q{+}));
 
 JIP::ClassField::attr(__PACKAGE__, attr_5 => (get => q{getter}, set => q{setter}));
 
+JIP::ClassField::attr(__PACKAGE__, attr_6 => (
+    get     => q{+},
+    set     => q{+}),
+    default => q{default_value},
+);
+
 subtest 'attr()' => sub {
     plan tests => 1;
 
@@ -51,6 +57,15 @@ subtest 'getter and setter' => sub {
 
     is ref($obj->setter(42)), __PACKAGE__;
     is $obj->getter, 42;
+};
+
+subtest 'default value' => sub {
+    plan tests => 2;
+
+    my $obj = bless {}, __PACKAGE__;
+
+    is $obj->set_attr_6(42)->attr_6, 42;
+    is $obj->set_attr_6()->attr_6, q{default_value};
 };
 
 package JIP::ClassField::Test;

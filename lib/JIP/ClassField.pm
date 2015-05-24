@@ -52,11 +52,22 @@ sub attr {
             $method_name = $value;
         }
 
-        $patch{$method_name} = sub {
-            my ($self, $value) = @ARG;
-            $self->{$attr} = $value;
-            return $self;
-        };
+        if (exists $param{'default'}) {
+            my $default_value = $param{'default'};
+            $patch{$method_name} = sub {
+                my ($self, $value) = @ARG;
+                $self->{$attr} = $value // $default_value;
+                return $self;
+            };
+        }
+        else {
+            $patch{$method_name} = sub {
+                my ($self, $value) = @ARG;
+                $self->{$attr} = $value;
+                return $self;
+            };
+        }
+
     }
 
     monkey_patch($class, %patch);
