@@ -54,6 +54,7 @@ sub attr {
 
         if (exists $param{'default'}) {
             my $default_value = $param{'default'};
+
             $patch{$method_name} = sub {
                 my ($self, $value) = @ARG;
                 $self->{$attr} = $value // $default_value;
@@ -67,7 +68,6 @@ sub attr {
                 return $self;
             };
         }
-
     }
 
     monkey_patch($class, %patch);

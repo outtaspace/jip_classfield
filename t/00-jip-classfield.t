@@ -65,7 +65,7 @@ subtest 'default value' => sub {
     my $obj = bless {}, __PACKAGE__;
 
     is $obj->set_attr_6(42)->attr_6, 42;
-    is $obj->set_attr_6()->attr_6, q{default_value};
+    is $obj->set_attr_6->attr_6, q{default_value};
 };
 
 package JIP::ClassField::Test;
