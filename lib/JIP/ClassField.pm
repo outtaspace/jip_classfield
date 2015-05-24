@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use English qw(-no_match_vars);
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 # Will be shipping with Perl 5.22
 my $NAME = eval {
@@ -102,7 +102,7 @@ JIP::ClassField - Declares an attribute for the class
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 

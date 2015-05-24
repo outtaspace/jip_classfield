@@ -11,7 +11,7 @@ plan tests => 5;
 subtest 'Require some module' => sub {
     plan tests => 4;
 
-    use_ok 'JIP::ClassField', '0.01';
+    use_ok 'JIP::ClassField', '0.02';
     require_ok 'JIP::ClassField';
 
     diag(
