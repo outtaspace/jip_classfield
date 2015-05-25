@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use English qw(-no_match_vars);
 
-plan tests => 5;
+plan tests => 6;
 
 subtest 'Require some module' => sub {
     plan tests => 4;
@@ -68,26 +68,35 @@ subtest 'default value' => sub {
     is $obj->set_attr_6->attr_6, q{default_value};
 };
 
+subtest 'has()' => sub {
+    has('answer' => (get => q{+}, set => q{+}));
+
+    my $obj = bless({}, __PACKAGE__)->set_answer(42);
+
+    is $obj->answer, 42;
+};
+
 package JIP::ClassField::Test;
 
 use JIP::ClassField;
 use English qw(-no_match_vars);
 
-has 'name' => (get => q{+}, set => q{+});
+# The parentheses optional if predeclared/imported
+has 'answer' => (get => q{+}, set => q{+});
 
 sub new {
-    my ($class, $name) = @ARG;
+    my ($class, $answer) = @ARG;
 
-    return bless({}, $class)->set_name($name);
+    return bless({}, $class)->set_answer($answer);
 }
 
 package main;
 
-subtest 'has()' => sub {
+subtest 'The parentheses is optional if has() is predeclared/imported' => sub {
     plan tests => 1;
 
     my $obj = JIP::ClassField::Test->new(42);
 
-    is $obj->name, 42;
+    is $obj->answer, 42;
 };
 
