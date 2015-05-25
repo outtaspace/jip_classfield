@@ -21,16 +21,16 @@ sub attr {
     my %patch;
 
     if (exists $param{'get'}) {
-        my ($method_name, $value) = (q{}, $param{'get'});
+        my ($method_name, $getter) = (q{}, $param{'get'});
 
-        if ($value eq q{+}) {
+        if ($getter eq q{+}) {
             $method_name = $attr;
         }
-        elsif ($value eq q{-}) {
+        elsif ($getter eq q{-}) {
             $method_name = q{_}. $attr;
         }
         else {
-            $method_name = $value;
+            $method_name = $getter;
         }
 
         $patch{$method_name} = sub {
@@ -40,16 +40,16 @@ sub attr {
     }
 
     if (exists $param{'set'}) {
-        my ($method_name, $value) = (q{}, $param{'set'});
+        my ($method_name, $setter) = (q{}, $param{'set'});
 
-        if ($value eq q{+}) {
+        if ($setter eq q{+}) {
             $method_name = q{set_}. $attr;
         }
-        elsif ($value eq q{-}) {
+        elsif ($setter eq q{-}) {
             $method_name = q{_set_}. $attr;
         }
         else {
-            $method_name = $value;
+            $method_name = $setter;
         }
 
         if (exists $param{'default'}) {
@@ -70,7 +70,7 @@ sub attr {
         }
     }
 
-    monkey_patch($class, %patch);
+    return monkey_patch($class, %patch);
 }
 
 sub monkey_patch {
@@ -80,16 +80,18 @@ sub monkey_patch {
     no warnings 'redefine';
 
     while(my ($method_name, $value) = each %patch) {
-        my $full_name = $class .'::'. $method_name;
+        my $full_name = $class .q{::}. $method_name;
 
         *{$full_name} = $NAME->($full_name, $value);
     }
+
+    return 1;
 }
 
 sub import {
     my $caller = caller;
 
-    monkey_patch($caller, 'has', sub { attr($caller, @ARG) });
+    return monkey_patch($caller, 'has', sub { attr($caller, @ARG) });
 }
 
 1;
