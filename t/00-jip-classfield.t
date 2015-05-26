@@ -48,7 +48,7 @@ JIP::ClassField::attr(__PACKAGE__, attr_6 => (
 JIP::ClassField::attr(__PACKAGE__, attr_7 => (
     get     => q{+},
     set     => q{+}),
-    default => sub { shift->attr_6 }
+    default => sub { shift->attr_6 },
 );
 
 subtest 'attr()' => sub {
@@ -87,8 +87,8 @@ subtest 'default value is a callback' => sub {
 
     my $obj = bless {}, __PACKAGE__;
 
-    is $obj->set_attr_7(42)->attr_7, 42;
-    is $obj->set_attr_6->set_attr_7->attr_7,     q{default_value};
+    is $obj->set_attr_7(42)->attr_7,         42;
+    is $obj->set_attr_6->set_attr_7->attr_7, q{default_value};
 };
 
 subtest 'has()' => sub {
