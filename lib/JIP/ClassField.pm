@@ -100,7 +100,7 @@ __END__
 
 =head1 NAME
 
-JIP::ClassField - Declares an attribute for the class
+JIP::ClassField - Create attribute accessor for hash-based objects
 
 =head1 VERSION
 
@@ -108,19 +108,27 @@ Version 0.02
 
 =head1 SYNOPSIS
 
+    use Test::More;
     use JIP::ClassField;
 
     # Public access to the "foo"
-    has 'foo' => (get => '+', set => '+');
-    say $self->set_foo(42)->foo; # 42
+    has('foo' => (get => '+', set => '+'));
+    is($self->set_foo(42)->foo, 42);
 
     # Private access to the "bar"
-    has 'bar' => (get => '-', set => '-');
-    say $self->_set_bar(42)->_bar; # 42
+    has('bar' => (get => '-', set => '-'));
+    is($self->_set_bar(42)->_bar, 42);
 
     # Methods with user defined names
-    has 'wtf' => (get => 'wtf_getter', set => 'wtf_setter');
-    say $self->wtf_setter(42)->wtf_getter; # 42
+    has('wtf' => (get => 'wtf_getter', set => 'wtf_setter'));
+    is($self->wtf_setter(42)->wtf_getter, 42);
+
+    # Pass an optional first argument of setter to set
+    # a default value, it should be a constant.
+    has('baz' => (get => '+', set => '+', default => 42));
+    is($self->set_baz->baz, 42);
+
+    done_testing();
 
 =head1 SEE ALSO
 
