@@ -60,12 +60,13 @@ subtest 'getter and setter' => sub {
 };
 
 subtest 'default value' => sub {
-    plan tests => 2;
+    plan tests => 3;
 
     my $obj = bless {}, __PACKAGE__;
 
-    is $obj->set_attr_6(42)->attr_6, 42;
-    is $obj->set_attr_6->attr_6, q{default_value};
+    is $obj->set_attr_6(42)->attr_6,    42;
+    is $obj->set_attr_6(undef)->attr_6, undef;
+    is $obj->set_attr_6->attr_6,        q{default_value};
 };
 
 subtest 'has()' => sub {

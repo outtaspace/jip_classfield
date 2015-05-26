@@ -56,8 +56,8 @@ sub attr {
             my $default_value = $param{'default'};
 
             $patch{$method_name} = sub {
-                my ($self, $value) = @ARG;
-                $self->{$attr} = $value // $default_value;
+                my $self = shift;
+                $self->{$attr} = @ARG == 1 ? shift : $default_value;
                 return $self;
             };
         }
