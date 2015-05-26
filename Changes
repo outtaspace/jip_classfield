@@ -1,5 +1,11 @@
 Revision history for JIP-ClassFiels
 
+0.03    2015-05-26
+        Fixed default_value handling bugs.
+        Default value should be a constant or callback.
+        More tests.
+        Improved documentation.
+
 0.02    2015-05-24
         attr() support default parameter value.
 

@@ -6,7 +6,7 @@ use warnings;
 use Carp qw(croak);
 use English qw(-no_match_vars);
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 # Will be shipping with Perl 5.22
 my $NAME = eval {
@@ -119,7 +119,7 @@ JIP::ClassField - Create attribute accessor for hash-based objects
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =head1 SYNOPSIS
 
