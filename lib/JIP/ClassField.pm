@@ -3,6 +3,7 @@ package JIP::ClassField;
 use 5.006;
 use strict;
 use warnings;
+use Carp qw(croak);
 use English qw(-no_match_vars);
 
 our $VERSION = '0.02';
@@ -17,6 +18,12 @@ sub attr {
     my ($self, $attr, %param) = @ARG;
 
     my $class = ref $self || $self;
+
+    croak qq{Class not defined\n}
+        unless defined $class and length $class;
+
+    croak qq{Attribute not defined\n}
+        unless defined $attr and length $attr;
 
     my %patch;
 
@@ -57,7 +64,15 @@ sub attr {
 
             $patch{$method_name} = sub {
                 my $self = shift;
-                $self->{$attr} = @ARG == 1 ? shift : $default_value;
+
+                if (@ARG == 1) {
+                    $self->{$attr} = shift;
+                }
+                else {
+                    $self->{$attr} = ref($default_value) eq 'CODE' ?
+                        $default_value->($self) : $default_value;
+                }
+
                 return $self;
             };
         }
@@ -111,6 +126,8 @@ Version 0.02
     use Test::More;
     use JIP::ClassField;
 
+    my $self = bless {}, __PACKAGE__;
+
     # Public access to the "foo"
     has('foo' => (get => '+', set => '+'));
     is($self->set_foo(42)->foo, 42);
@@ -124,9 +141,15 @@ Version 0.02
     is($self->wtf_setter(42)->wtf_getter, 42);
 
     # Pass an optional first argument of setter to set
-    # a default value, it should be a constant.
+    # a default value, it should be a constant or callback.
     has('baz' => (get => '+', set => '+', default => 42));
     is($self->set_baz->baz, 42);
+
+    has('qux' => (get => '+', set => '+', default => sub {
+        my $self = shift;
+        return $self->baz;
+    }));
+    is($self->set_qux->qux, 42);
 
     done_testing();
 

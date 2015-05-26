@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use English qw(-no_match_vars);
 
-plan tests => 6;
+plan tests => 9;
 
 subtest 'Require some module' => sub {
     plan tests => 4;
@@ -25,6 +25,13 @@ subtest 'Require some module' => sub {
     can_ok __PACKAGE__, qw(has);
 };
 
+eval { JIP::ClassField::attr() } or do {
+    like $EVAL_ERROR, qr{^Class \s not \s defined}x;
+};
+eval { JIP::ClassField::attr(__PACKAGE__) } or do {
+    like $EVAL_ERROR, qr{^Attribute \s not \s defined}x;
+};
+
 JIP::ClassField::attr(__PACKAGE__, attr_1 => (get => q{-}, set => q{-}));
 JIP::ClassField::attr(__PACKAGE__, attr_2 => (get => q{+}, set => q{-}));
 JIP::ClassField::attr(__PACKAGE__, attr_3 => (get => q{-}, set => q{+}));
@@ -36,6 +43,12 @@ JIP::ClassField::attr(__PACKAGE__, attr_6 => (
     get     => q{+},
     set     => q{+}),
     default => q{default_value},
+);
+
+JIP::ClassField::attr(__PACKAGE__, attr_7 => (
+    get     => q{+},
+    set     => q{+}),
+    default => sub { shift->attr_6 }
 );
 
 subtest 'attr()' => sub {
@@ -59,7 +72,7 @@ subtest 'getter and setter' => sub {
     is $obj->getter, 42;
 };
 
-subtest 'default value' => sub {
+subtest 'default value is a constant' => sub {
     plan tests => 3;
 
     my $obj = bless {}, __PACKAGE__;
@@ -67,6 +80,15 @@ subtest 'default value' => sub {
     is $obj->set_attr_6(42)->attr_6,    42;
     is $obj->set_attr_6(undef)->attr_6, undef;
     is $obj->set_attr_6->attr_6,        q{default_value};
+};
+
+subtest 'default value is a callback' => sub {
+    plan tests => 2;
+
+    my $obj = bless {}, __PACKAGE__;
+
+    is $obj->set_attr_7(42)->attr_7, 42;
+    is $obj->set_attr_6->set_attr_7->attr_7,     q{default_value};
 };
 
 subtest 'has()' => sub {

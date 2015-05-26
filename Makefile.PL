@@ -20,6 +20,7 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'English' => 0,
+        'Carp'    => 0,
     },
     dist  => {COMPRESS => 'gzip -9f', SUFFIX => 'gz'},
     clean => {FILES => 'JIP-ClassField-*'},
