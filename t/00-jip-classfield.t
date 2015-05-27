@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use English qw(-no_match_vars);
 
-plan tests => 9;
+plan tests => 11;
 
 subtest 'Require some module' => sub {
     plan tests => 4;
@@ -28,7 +28,13 @@ subtest 'Require some module' => sub {
 eval { JIP::ClassField::attr() } or do {
     like $EVAL_ERROR, qr{^Class \s not \s defined}x;
 };
+eval { JIP::ClassField::attr(q{}) } or do {
+    like $EVAL_ERROR, qr{^Class \s not \s defined}x;
+};
 eval { JIP::ClassField::attr(__PACKAGE__) } or do {
+    like $EVAL_ERROR, qr{^Attribute \s not \s defined}x;
+};
+eval { JIP::ClassField::attr(__PACKAGE__, q{}) } or do {
     like $EVAL_ERROR, qr{^Attribute \s not \s defined}x;
 };
 
@@ -41,15 +47,15 @@ JIP::ClassField::attr(__PACKAGE__, attr_5 => (get => q{getter}, set => q{setter}
 
 JIP::ClassField::attr(__PACKAGE__, attr_6 => (
     get     => q{+},
-    set     => q{+}),
+    set     => q{+},
     default => q{default_value},
-);
+));
 
 JIP::ClassField::attr(__PACKAGE__, attr_7 => (
     get     => q{+},
-    set     => q{+}),
+    set     => q{+},
     default => sub { shift->attr_6 },
-);
+));
 
 subtest 'attr()' => sub {
     plan tests => 1;
@@ -69,7 +75,7 @@ subtest 'getter and setter' => sub {
     my $obj = bless {}, __PACKAGE__;
 
     is ref($obj->setter(42)), __PACKAGE__;
-    is $obj->getter, 42;
+    is $obj->getter,          42;
 };
 
 subtest 'default value is a constant' => sub {
@@ -92,7 +98,7 @@ subtest 'default value is a callback' => sub {
 };
 
 subtest 'has()' => sub {
-    has('answer' => (get => q{+}, set => q{+}));
+    has(answer => (get => q{+}, set => q{+}));
 
     my $obj = bless({}, __PACKAGE__)->set_answer(42);
 
@@ -105,7 +111,7 @@ use JIP::ClassField;
 use English qw(-no_match_vars);
 
 # The parentheses optional if predeclared/imported
-has 'answer' => (get => q{+}, set => q{+});
+has answer => (get => q{+}, set => q{+});
 
 sub new {
     my ($class, $answer) = @ARG;
