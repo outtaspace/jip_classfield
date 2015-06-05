@@ -19,10 +19,10 @@ sub attr {
 
     my $class = ref $self || $self;
 
-    croak qq{Class not defined\n}
+    croak q{Class not defined}
         unless defined $class and length $class;
 
-    croak qq{Attribute not defined\n}
+    croak q{Attribute not defined}
         unless defined $attr and length $attr;
 
     my %patch;
