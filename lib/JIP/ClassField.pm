@@ -8,11 +8,16 @@ use English qw(-no_match_vars);
 
 our $VERSION = '0.03';
 
+my $maybe_set_subname = sub { $ARG[1]; };
+
 # Will be shipping with Perl 5.22
-my $NAME = eval {
+eval {
     require Sub::Util;
-    Sub::Util->can('set_subname');
-} || sub { $ARG[1] };
+
+    if (my $set_subname = Sub::Util->can('set_subname')) {
+        $maybe_set_subname = $set_subname;
+    }
+};
 
 sub attr {
     my ($self, $attr, %param) = @ARG;
@@ -97,7 +102,7 @@ sub monkey_patch {
     while(my ($method_name, $value) = each %patch) {
         my $full_name = $class .q{::}. $method_name;
 
-        *{$full_name} = $NAME->($full_name, $value);
+        *{$full_name} = $maybe_set_subname->($full_name, $value);
     }
 
     return 1;
