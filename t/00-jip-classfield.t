@@ -9,10 +9,12 @@ use English qw(-no_match_vars);
 plan tests => 12;
 
 subtest 'Require some module' => sub {
-    plan tests => 4;
+    plan tests => 5;
 
     use_ok 'JIP::ClassField', '0.03';
+
     require_ok 'JIP::ClassField';
+    is $JIP::ClassField::VERSION, '0.03';
 
     diag(
         sprintf 'Testing JIP::ClassField %s, Perl %s, %s',
