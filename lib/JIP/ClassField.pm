@@ -108,6 +108,18 @@ sub monkey_patch {
     return 1;
 }
 
+sub cleanup_namespace {
+    my @names  = @ARG;
+    my $caller = caller;
+
+    no strict 'refs';
+    my $ref = \%{ $caller .'::' };
+
+    map { delete $ref->{$_} } @names;
+
+    return 1;
+}
+
 sub import {
     my $caller = caller;
 

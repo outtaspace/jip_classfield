@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use English qw(-no_match_vars);
 
-plan tests => 11;
+plan tests => 12;
 
 subtest 'Require some module' => sub {
     plan tests => 4;
@@ -21,7 +21,7 @@ subtest 'Require some module' => sub {
             $EXECUTABLE_NAME,
     );
 
-    can_ok 'JIP::ClassField', qw(attr monkey_patch);
+    can_ok 'JIP::ClassField', qw(attr monkey_patch cleanup_namespace);
     can_ok __PACKAGE__, qw(has);
 };
 
@@ -103,6 +103,18 @@ subtest 'has()' => sub {
     my $obj = bless({}, __PACKAGE__)->set_answer(42);
 
     is $obj->answer, 42;
+};
+
+subtest 'cleanup_namespace()' => sub {
+    plan tests => 2;
+
+    has(tratata => (get => '+', set => '+'));
+
+    can_ok __PACKAGE__, qw(tratata set_tratata);
+
+    JIP::ClassField::cleanup_namespace(qw(tratata set_tratata));
+
+    ok(not __PACKAGE__->can('tratata') and not __PACKAGE__->can('set_tratata'));
 };
 
 package JIP::ClassField::Test;
