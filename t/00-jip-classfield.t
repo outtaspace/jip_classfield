@@ -11,10 +11,10 @@ plan tests => 12;
 subtest 'Require some module' => sub {
     plan tests => 5;
 
-    use_ok 'JIP::ClassField', '0.03';
+    use_ok 'JIP::ClassField', '0.04';
 
     require_ok 'JIP::ClassField';
-    is $JIP::ClassField::VERSION, '0.03';
+    is $JIP::ClassField::VERSION, '0.04';
 
     diag(
         sprintf 'Testing JIP::ClassField %s, Perl %s, %s',

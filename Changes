@@ -1,5 +1,8 @@
 Revision history for JIP-ClassFiels
 
+0.04    2015-07-08
+        Added cleanup_namespace method.
+
 0.03    2015-05-26
         Fixed default_value handling bugs.
         Default value should be a constant or callback.
