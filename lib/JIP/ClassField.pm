@@ -168,6 +168,9 @@ Version 0.03
     }));
     is($self->set_qux->qux, 42);
 
+    JIP::ClassField::cleanup_namespace('has');
+    ok(not __PACKAGE__->can('has'));
+
     done_testing();
 
 =head1 SEE ALSO
