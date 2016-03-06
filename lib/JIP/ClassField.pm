@@ -25,72 +25,81 @@ sub attr {
     my $class = ref $self || $self;
 
     croak q{Class not defined}
-        unless defined $class and length $class;
+        unless defined $class && length $class;
 
     croak q{Attribute not defined}
-        unless defined $attr and length $attr;
+        unless defined $attr && length $attr;
 
-    my %patch;
+    my @patches;
 
-    if (exists $param{'get'}) {
-        my ($method_name, $getter) = (q{}, $param{'get'});
+    for my $each_attr (@{ ref $attr eq 'ARRAY' ? $attr : [$attr] }) {
+        croak sprintf(q{Attribute "%s" invalid}, $each_attr)
+            unless $each_attr =~ m{^[a-zA-Z_]\w*$}x;
 
-        if ($getter eq q{+}) {
-            $method_name = $attr;
-        }
-        elsif ($getter eq q{-}) {
-            $method_name = q{_}. $attr;
-        }
-        else {
-            $method_name = $getter;
-        }
+        my %patch;
 
-        $patch{$method_name} = sub {
-            my $self = shift;
-            return $self->{$attr};
-        };
-    }
+        if (exists $param{'get'}) {
+            my ($method_name, $getter) = (q{}, $param{'get'});
 
-    if (exists $param{'set'}) {
-        my ($method_name, $setter) = (q{}, $param{'set'});
-
-        if ($setter eq q{+}) {
-            $method_name = q{set_}. $attr;
-        }
-        elsif ($setter eq q{-}) {
-            $method_name = q{_set_}. $attr;
-        }
-        else {
-            $method_name = $setter;
-        }
-
-        if (exists $param{'default'}) {
-            my $default_value = $param{'default'};
+            if ($getter eq q{+}) {
+                $method_name = $each_attr;
+            }
+            elsif ($getter eq q{-}) {
+                $method_name = q{_}. $each_attr;
+            }
+            else {
+                $method_name = $getter;
+            }
 
             $patch{$method_name} = sub {
                 my $self = shift;
-
-                if (@ARG == 1) {
-                    $self->{$attr} = shift;
-                }
-                else {
-                    $self->{$attr} = ref($default_value) eq 'CODE' ?
-                        $default_value->($self) : $default_value;
-                }
-
-                return $self;
+                return $self->{$each_attr};
             };
         }
-        else {
-            $patch{$method_name} = sub {
-                my ($self, $value) = @ARG;
-                $self->{$attr} = $value;
-                return $self;
-            };
+
+        if (exists $param{'set'}) {
+            my ($method_name, $setter) = (q{}, $param{'set'});
+
+            if ($setter eq q{+}) {
+                $method_name = q{set_}. $each_attr;
+            }
+            elsif ($setter eq q{-}) {
+                $method_name = q{_set_}. $each_attr;
+            }
+            else {
+                $method_name = $setter;
+            }
+
+            if (exists $param{'default'}) {
+                my $default_value = $param{'default'};
+
+                $patch{$method_name} = sub {
+                    my $self = shift;
+
+                    if (@ARG == 1) {
+                        $self->{$each_attr} = shift;
+                    }
+                    else {
+                        $self->{$each_attr} = ref($default_value) eq 'CODE' ?
+                            $default_value->($self) : $default_value;
+                    }
+
+                    return $self;
+                };
+            }
+            else {
+                $patch{$method_name} = sub {
+                    my ($self, $value) = @ARG;
+                    $self->{$each_attr} = $value;
+                    return $self;
+                };
+            }
         }
+
+        push @patches, \%patch;
     }
 
-    return monkey_patch($class, %patch);
+    monkey_patch($class, %{ $_ }) for @patches;
 }
 
 sub monkey_patch {
@@ -145,31 +154,41 @@ Version 0.04
 
     my $self = bless {}, __PACKAGE__;
 
-    # Public access to the "foo"
-    has('foo' => (get => '+', set => '+'));
+    # Public access
+    has foo => (get => '+', set => '+');
     is($self->set_foo(42)->foo, 42);
 
-    # Private access to the "bar"
-    has('bar' => (get => '-', set => '-'));
+
+    # Private access
+    has bar => (get => '-', set => '-');
     is($self->_set_bar(42)->_bar, 42);
 
+
+    # Declaring multiple attributes in a single declaration
+    has [qw(tratata ololo)] => (get => '+', set => '+');
+
+
     # Methods with user defined names
-    has('wtf' => (get => 'wtf_getter', set => 'wtf_setter'));
+    has wtf => (get => 'wtf_getter', set => 'wtf_setter');
     is($self->wtf_setter(42)->wtf_getter, 42);
+
 
     # Pass an optional first argument of setter to set
     # a default value, it should be a constant or callback.
-    has('baz' => (get => '+', set => '+', default => 42));
+    has baz => (get => '+', set => '+', default => 42);
     is($self->set_baz->baz, 42);
 
-    has('qux' => (get => '+', set => '+', default => sub {
+
+    has qux => (get => '+', set => '+', default => sub {
         my $self = shift;
         return $self->baz;
-    }));
+    });
     is($self->set_qux->qux, 42);
+
 
     JIP::ClassField::cleanup_namespace('has');
     ok(not __PACKAGE__->can('has'));
+
 
     done_testing();
 

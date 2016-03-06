@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use English qw(-no_match_vars);
 
-plan tests => 12;
+plan tests => 14;
 
 subtest 'Require some module' => sub {
     plan tests => 5;
@@ -39,6 +39,9 @@ eval { JIP::ClassField::attr(__PACKAGE__) } or do {
 eval { JIP::ClassField::attr(__PACKAGE__, q{}) } or do {
     like $EVAL_ERROR, qr{^Attribute \s not \s defined}x;
 };
+eval { JIP::ClassField::attr(__PACKAGE__, q{bip bip}) } or do {
+    like $EVAL_ERROR, qr{^Attribute \s "bip \s bip" \s invalid}x;
+};
 
 JIP::ClassField::attr(__PACKAGE__, attr_1 => (get => q{-}, set => q{-}));
 JIP::ClassField::attr(__PACKAGE__, attr_2 => (get => q{+}, set => q{-}));
@@ -59,6 +62,11 @@ JIP::ClassField::attr(__PACKAGE__, attr_7 => (
     default => sub { shift->attr_6 },
 ));
 
+JIP::ClassField::attr(__PACKAGE__, [qw(attr_8 attr_9)] => (
+    get => q{+},
+    set => q{+},
+));
+
 subtest 'attr()' => sub {
     plan tests => 1;
 
@@ -68,6 +76,8 @@ subtest 'attr()' => sub {
         _attr_3  set_attr_3
         attr_4   set_attr_4
         getter   setter
+        attr_8   set_attr_8
+        attr_9   set_attr_9
     );
 };
 
@@ -78,6 +88,18 @@ subtest 'getter and setter' => sub {
 
     is ref($obj->setter(42)), __PACKAGE__;
     is $obj->getter,          42;
+};
+
+subtest 'multiple attributes' => sub {
+    plan tests => 2;
+
+    my $obj = bless {}, __PACKAGE__;
+
+    $obj->set_attr_8(11);
+    $obj->set_attr_9(22);
+
+    is $obj->attr_8, 11;
+    is $obj->attr_9, 22;
 };
 
 subtest 'default value is a constant' => sub {
