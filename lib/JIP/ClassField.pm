@@ -10,7 +10,7 @@ our $VERSION = '0.04';
 
 my $maybe_set_subname = sub { $ARG[1]; };
 
-# Will be shipping with Perl 5.22
+# Supported on Perl 5.22+
 eval {
     require Sub::Util;
 
@@ -99,7 +99,7 @@ sub monkey_patch {
     no strict 'refs';
     no warnings 'redefine';
 
-    while(my ($method_name, $value) = each %patch) {
+    while (my ($method_name, $value) = each %patch) {
         my $full_name = $class .q{::}. $method_name;
 
         *{$full_name} = $maybe_set_subname->($full_name, $value);
