@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use English qw(-no_match_vars);
 
-plan tests => 14;
+plan tests => 16;
 
 subtest 'Require some module' => sub {
     plan tests => 5;
@@ -66,6 +66,7 @@ JIP::ClassField::attr(__PACKAGE__, [qw(attr_8 attr_9)] => (
     get => q{+},
     set => q{+},
 ));
+JIP::ClassField::attr(__PACKAGE__, 'attr_10');
 
 subtest 'attr()' => sub {
     plan tests => 1;
@@ -78,6 +79,7 @@ subtest 'attr()' => sub {
         getter   setter
         attr_8   set_attr_8
         attr_9   set_attr_9
+        attr_10  set_attr_10
     );
 };
 
@@ -139,6 +141,38 @@ subtest 'cleanup_namespace()' => sub {
     JIP::ClassField::cleanup_namespace(qw(tratata set_tratata));
 
     ok(not __PACKAGE__->can('tratata') and not __PACKAGE__->can('set_tratata'));
+};
+
+subtest '_define_name_of_getter()' => sub {
+    plan tests => 4;
+
+    my $run = sub {
+        my %param = @ARG;
+        JIP::ClassField::_define_name_of_getter('foo', \%param);
+    };
+
+    is $run->(),           'foo';
+    is $run->(get => '+'), 'foo';
+
+    is $run->(get => '-'), '_foo';
+
+    is $run->(get => 'foo_getter'), 'foo_getter';
+};
+
+subtest '_define_name_of_setter()' => sub {
+    plan tests => 4;
+
+    my $run = sub {
+        my %param = @ARG;
+        JIP::ClassField::_define_name_of_setter('foo', \%param);
+    };
+
+    is $run->(),           'set_foo';
+    is $run->(set => '+'), 'set_foo';
+
+    is $run->(set => '-'), '_set_foo';
+
+    is $run->(set => 'foo_setter'), 'foo_setter';
 };
 
 package JIP::ClassField::Test;

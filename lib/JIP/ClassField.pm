@@ -38,37 +38,13 @@ sub attr {
 
         my %patch;
 
-        if (exists $param{'get'}) {
-            my ($method_name, $getter) = (q{}, $param{'get'});
+        $patch{_define_name_of_getter($each_attr, \%param)} = sub {
+            my $self = shift;
+            return $self->{$each_attr};
+        };
 
-            if ($getter eq q{+}) {
-                $method_name = $each_attr;
-            }
-            elsif ($getter eq q{-}) {
-                $method_name = q{_}. $each_attr;
-            }
-            else {
-                $method_name = $getter;
-            }
-
-            $patch{$method_name} = sub {
-                my $self = shift;
-                return $self->{$each_attr};
-            };
-        }
-
-        if (exists $param{'set'}) {
-            my ($method_name, $setter) = (q{}, $param{'set'});
-
-            if ($setter eq q{+}) {
-                $method_name = q{set_}. $each_attr;
-            }
-            elsif ($setter eq q{-}) {
-                $method_name = q{_set_}. $each_attr;
-            }
-            else {
-                $method_name = $setter;
-            }
+        {
+            my $method_name = _define_name_of_setter($each_attr, \%param);
 
             if (exists $param{'default'}) {
                 my $default_value = $param{'default'};
@@ -135,6 +111,56 @@ sub import {
     return monkey_patch($caller, 'has', sub { attr($caller, @ARG) });
 }
 
+sub _define_name_of_getter {
+    my ($attr, $param) = @ARG;
+
+    my $method_name;
+
+    if (exists $param->{'get'}) {
+        my $getter = $param->{'get'};
+
+        if ($getter eq q{+}) {
+            $method_name = $attr;
+        }
+        elsif ($getter eq q{-}) {
+            $method_name = q{_}. $attr;
+        }
+        else {
+            $method_name = $getter;
+        }
+    }
+    else {
+        $method_name = $attr;
+    }
+
+    return $method_name;
+}
+
+sub _define_name_of_setter {
+    my ($attr, $param) = @ARG;
+
+    my $method_name;
+
+    if (exists $param->{'set'}) {
+        my $setter = $param->{'set'};
+
+        if ($setter eq q{+}) {
+            $method_name = q{set_}. $attr;
+        }
+        elsif ($setter eq q{-}) {
+            $method_name = q{_set_}. $attr;
+        }
+        else {
+            $method_name = $setter;
+        }
+    }
+    else {
+        $method_name = q{set_}. $attr;
+    }
+
+    return $method_name;
+}
+
 1;
 
 __END__
@@ -156,6 +182,10 @@ Version 0.04
 
     # Public access
     has foo => (get => '+', set => '+');
+    is($self->set_foo(42)->foo, 42);
+
+    # or
+    has 'foo';
     is($self->set_foo(42)->foo, 42);
 
 
