@@ -171,7 +171,7 @@ JIP::ClassField - Create attribute accessor for hash-based objects
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =head1 SYNOPSIS
 

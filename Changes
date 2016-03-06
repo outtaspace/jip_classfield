@@ -1,5 +1,9 @@
 Revision history for JIP-ClassFiels
 
+0.05    2016-03-06
+        Added support for multiple attributes in a single declaration.
+        Default rules for attributes.
+
 0.04    2015-07-08
         Added cleanup_namespace method.
 
