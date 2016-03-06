@@ -6,7 +6,7 @@ use warnings;
 use Carp qw(croak);
 use English qw(-no_match_vars);
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 my $maybe_set_subname = sub { $ARG[1]; };
 
