@@ -3,7 +3,7 @@ use strict;
 use warnings FATAL => 'all';
 use ExtUtils::MakeMaker;
 
-WriteMakefile(
+my %write_makefile_param = (
     NAME             => 'JIP::ClassField',
     AUTHOR           => q{Vladimir Zhavoronkov <flyweight@yandex.ru>},
     VERSION_FROM     => 'lib/JIP/ClassField.pm',
@@ -14,7 +14,8 @@ WriteMakefile(
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
-    BUILD_REQUIRES => {
+    BUILD_REQUIRES => {},
+    TEST_REQUIRES => {
         'Test::More' => 0,
         'English'    => 0,
     },
@@ -25,4 +26,17 @@ WriteMakefile(
     dist  => {COMPRESS => 'gzip -9f', SUFFIX => 'gz'},
     clean => {FILES => 'JIP-ClassField-*'},
 );
+
+unless (eval { ExtUtils::MakeMaker->VERSION(6.63_03); }) {
+    $write_makefile_param{PREREQ_PM} = {
+        %{ delete $write_makefile_param{'TEST_REQUIRES'} },
+        %{ delete $write_makefile_param{'BUILD_REQUIRES'} },
+    };
+}
+
+unless (eval { ExtUtils::MakeMaker->VERSION(6.52) }) {
+    delete $write_makefile_param{'CONFIGURE_REQUIRES'};
+}
+
+WriteMakefile(%write_makefile_param);
 

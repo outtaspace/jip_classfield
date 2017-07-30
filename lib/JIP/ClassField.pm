@@ -6,7 +6,7 @@ use warnings;
 use Carp qw(croak);
 use English qw(-no_match_vars);
 
-our $VERSION = '0.05';
+our $VERSION = '0.06-TRIAL';
 
 my $maybe_set_subname = sub { $ARG[1]; };
 
@@ -171,7 +171,7 @@ JIP::ClassField - Create attribute accessor for hash-based objects
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =head1 SYNOPSIS
 
