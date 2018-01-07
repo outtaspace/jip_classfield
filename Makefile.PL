@@ -11,6 +11,18 @@ my %write_makefile_param = (
     LICENSE          => 'artistic_2',
     PL_FILES         => {},
     MIN_PERL_VERSION => 5.006,
+    META_MERGE       => {
+        'meta-spec'    => {version => 2},
+        resources      => {
+            license    => ['http://www.opensource.org/licenses/artistic-license-2.0'],
+            bugtracker => {web => 'https://github.com/outtaspace/jip_classfield/issues'},
+            repository => {
+                type => 'git',
+                url  => 'https://github.com/outtaspace/jip_classfield.git',
+                web  => 'https://github.com/outtaspace/jip_classfield',
+            },
+        },
+    },
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
